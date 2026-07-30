@@ -195,7 +195,7 @@ function CommandesTab({ onNew }) {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'commandes' }, (payload) => {
         fetchCommandes();
         if (onNew) {
-          const c = payload.newRecord;
+          const c = payload.new;
           onNew(`Commande de ${c.client_phone} — ${c.montant_total} FCFA`);
         }
       })
@@ -259,7 +259,7 @@ function ReservationsTab({ onNew }) {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reservations' }, (payload) => {
         fetchReservations();
                 if (onNew) {
-          const r = payload.newRecord;
+              const r = payload.new;
           onNew(`Réservation de ${r.client_nom} — ${r.nombre_personnes} personnes`);
         }
       })
