@@ -13,11 +13,21 @@ const { TextArea } = Input;
 const API_URL = 'https://api-restaurant-3hn0.onrender.com'; 
 
 const cleanNumber = (val) => val === null || val === undefined || isNaN(val) ? 0 : val;
+const useIsMobile = () => {
+  const [mobile, setMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const h = () => setMobile(window.innerWidth < 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return mobile;
+};
 
 function App() {
   const [activeTab, setActiveTab] = useState('commandes');
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const addNotification = useCallback((titre, msg, type) => {
     const notif = {
@@ -62,42 +72,54 @@ function App() {
 
   return (
     <Layout style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      <Header style={{ backgroundColor: '#fff', padding: '0 24px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Title level={3} style={{ margin: 0, color: '#ff7a00' }}>🍔 Carnivore Back-Office</Title>
+      <Header style={{ backgroundColor: '#fff', padding: isMobile ? '0 12px' : '0 24px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Title level={isMobile ? 5 : 3} style={{ margin: 0, color: '#ff7a00' }}>🍔 {isMobile ? 'Carnivore' : 'Carnivore Back-Office'}</Title>
         <div style={{ position: 'relative' }}>
           <div style={{ position: 'relative', display: 'inline-block' }}>
-  <Button type="text" icon={<span style={{ fontSize: 20 }}>🔔</span>} onClick={() => setNotifOpen(!notifOpen)} />  {unreadCount > 0 && (
-    <span style={{
-      position: 'absolute', top: -4, right: -4,
-      backgroundColor: '#ff4d4f', color: '#fff',
-      fontSize: 10, minWidth: 16, height: 16,
-      borderRadius: 8, display: 'flex', alignItems: 'center',
-      justifyContent: 'center', padding: '0 4px',
-    }}>
-      {unreadCount}
-    </span>
-  )}
-</div>
+            <Button type="text" icon={<span style={{ fontSize: 20 }}>🔔</span>} onClick={() => setNotifOpen(!notifOpen)} />
+            {unreadCount > 0 && (
+              <span style={{
+                position: 'absolute', top: -4, right: -4,
+                backgroundColor: '#ff4d4f', color: '#fff',
+                fontSize: 10, minWidth: 16, height: 16,
+                borderRadius: 8, display: 'flex', alignItems: 'center',
+                justifyContent: 'center', padding: '0 4px',
+              }}>
+                {unreadCount}
+              </span>
+            )}
+          </div>
           {notifOpen && (
             <div style={{
-              position: 'absolute', top: 45, right: 0, width: 360,
-              backgroundColor: '#fff', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-              zIndex: 1000, maxHeight: 500, overflow: 'auto',
+              position: isMobile ? 'fixed' : 'absolute',
+              top: isMobile ? 0 : 45,
+              left: isMobile ? 0 : 'auto',
+              right: 0,
+              width: isMobile ? '100vw' : 360,
+              height: isMobile ? '100vh' : 'auto',
+              maxHeight: isMobile ? '100vh' : 500,
+              backgroundColor: '#fff',
+              borderRadius: isMobile ? 0 : 12,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+              zIndex: 1000, overflow: 'auto',
             }}>
               <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <strong>Notifications</strong>
-                {notifications.length > 0 && (
-                  <Button type="link" size="small" onClick={() => {
-                    setNotifications(prev => prev.map(n => ({ ...n, lu: true })));
-                  }}>Tout marquer lu</Button>
-                )}
+                <Space>
+                  {notifications.length > 0 && (
+                    <Button type="link" size="small" onClick={() => {
+                      setNotifications(prev => prev.map(n => ({ ...n, lu: true })));
+                    }}>Tout lire</Button>
+                  )}
+                  {isMobile && <Button type="link" size="small" onClick={() => setNotifOpen(false)}>✕ Fermer</Button>}
+                </Space>
               </div>
               {notifications.length === 0 ? (
                 <div style={{ padding: 32, textAlign: 'center', color: '#999' }}>Aucune notification</div>
               ) : (
                 notifications.map(n => (
                   <div key={n.id} style={{
-                    padding: '10px 16px', borderBottom: '1px solid #f5f5f5',
+                    padding: '12px 16px', borderBottom: '1px solid #f5f5f5',
                     backgroundColor: n.lu ? '#fff' : '#fff7e6',
                     cursor: 'pointer',
                   }}>
@@ -111,9 +133,15 @@ function App() {
           )}
         </div>
       </Header>
-      <Content style={{ padding: '24px' }}>
+      <Content style={{ padding: isMobile ? '12px' : '24px' }}>
         <Card variant="borderless" style={{ borderRadius: '12px' }}>
-          <Tabs activeKey={activeTab} onChange={(key) => { setActiveTab(key); setNotifOpen(false); }} items={items} centered size="large" />
+          <Tabs
+            activeKey={activeTab}
+            onChange={(key) => { setActiveTab(key); setNotifOpen(false); }}
+            items={items}
+            centered={!isMobile}
+            size={isMobile ? 'small' : 'large'}
+          />
         </Card>
       </Content>
     </Layout>
@@ -179,6 +207,7 @@ function CommandesTab({ onNew }) {
   const [commandes, setCommandes] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
+  const isMobile = useIsMobile();
 
   const fetchCommandes = async () => {
     setChargement(true);
@@ -233,7 +262,7 @@ function CommandesTab({ onNew }) {
   return (
     <>
       {erreur && <Alert message="Erreur" description={erreur} type="error" showIcon style={{ marginBottom: 16 }} />}
-      <Table columns={colonnes} dataSource={commandes} loading={chargement} rowKey="id" pagination={false} />
+      <Table columns={colonnes} dataSource={commandes} loading={chargement} rowKey="id" pagination={false} scroll={{ x: 'max-content' }}/>
     </>
   );
 }
@@ -243,6 +272,7 @@ function ReservationsTab({ onNew }) {
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
+  const isMobile = useIsMobile();
 
   const fetchReservations = async () => {
     setChargement(true);
@@ -285,7 +315,7 @@ function ReservationsTab({ onNew }) {
   return (
     <>
       {erreur && <Alert message="Erreur" description={erreur} type="error" showIcon style={{ marginBottom: 16 }} />}
-      <Table columns={colonnes} dataSource={reservations} loading={chargement} rowKey="id" pagination={false} />
+      <Table columns={colonnes} dataSource={reservations} loading={chargement} rowKey="id" pagination={false} scroll={{ x: 'max-content' }}/>
     </>
   );
 }
@@ -297,6 +327,7 @@ function CategoriesTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [form] = Form.useForm();
+  const isMobile = useIsMobile();
 
   const fetchData = async () => {
     setChargement(true);
@@ -375,13 +406,13 @@ function CategoriesTab() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={4} style={{ margin: 0 }}>Catégories</Title>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 8 : 16, marginBottom: 16 }}>
+        <Title level={isMobile ? 5 : 4} style={{ margin: 0 }}>Catégories</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()} style={{ background: '#ff7a00', borderColor: '#ff7a00' }}>Ajouter</Button>
       </div>
-      <Table columns={colonnes} dataSource={data} loading={chargement} rowKey="id" pagination={false} />
+      <Table columns={colonnes} dataSource={data} loading={chargement} rowKey="id" pagination={false} scroll={{ x: 'max-content' }}/>
 
-      <Modal title={editingRecord ? "Modifier la catégorie" : "Ajouter une catégorie"} open={isModalOpen} onCancel={closeModal} footer={null} destroyOnClose>
+      <Modal title={editingRecord ? "Modifier la catégorie" : "Ajouter une catégorie"} open={isModalOpen} onCancel={closeModal} footer={null} width={isMobile ? '95vw' : 520} destroyOnClose>
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item name="nom_fr" label="Nom (Français)" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="type" label="Type" rules={[{ required: true }]}>
@@ -404,6 +435,7 @@ function MenuTab() {
   const [editingRecord, setEditingRecord] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
   const [form] = Form.useForm();
+  const isMobile = useIsMobile();
 
   const fetchData = async () => {
     setChargement(true);
@@ -496,14 +528,14 @@ function MenuTab() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={4} style={{ margin: 0 }}>Liste des plats</Title>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 8 : 16, marginBottom: 16 }}>
+        <Title level={isMobile ? 5 : 4} style={{ margin: 0 }}>Liste des plats</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()} style={{ background: '#ff7a00', borderColor: '#ff7a00' }}>Ajouter un plat</Button>
       </div>
 
-      <Table columns={colonnes} dataSource={plats} loading={chargement} rowKey="id" pagination={false} />
+      <Table columns={colonnes} dataSource={plats} loading={chargement} rowKey="id" pagination={false} scroll={{ x: 'max-content' }}/>
 
-      <Modal title={editingRecord ? "Modifier le plat" : "Ajouter un nouveau plat"} open={isModalOpen} onCancel={closeModal} footer={null} width={700} destroyOnClose>
+      <Modal title={editingRecord ? "Modifier le plat" : "Ajouter un nouveau plat"} open={isModalOpen} onCancel={closeModal} footer={null} width={isMobile ? '95vw' : 700} destroyOnClose>
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <ImageUpload value={imageUrl} onChange={setImageUrl} />
 
@@ -513,7 +545,7 @@ function MenuTab() {
               {categories.map(cat => (<Select.Option key={cat.id} value={cat.id}>{cat.nom_fr} ({cat.type})</Select.Option>))}
             </Select>
           </Form.Item>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
             <Form.Item name="prix" label="Prix (FCFA)" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} min={0} /></Form.Item>
             <Form.Item name="temps_preparation" label="Temps (min)"><InputNumber style={{ width: '100%' }} min={0} /></Form.Item>
           </div>
@@ -539,6 +571,7 @@ function EvenementsTab() {
   const [editingRecord, setEditingRecord] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
   const [form] = Form.useForm();
+  const isMobile = useIsMobile();
 
   const fetchData = async () => {
     setChargement(true);
@@ -633,19 +666,19 @@ function EvenementsTab() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Title level={4} style={{ margin: 0 }}>Événements & Promotions</Title>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? 8 : 16, marginBottom: 16 }}>
+        <Title level={isMobile ? 5 : 4} style={{ margin: 0 }}>Événements & Promotions</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()} style={{ background: '#ff7a00', borderColor: '#ff7a00' }}>Créer un événement</Button>
       </div>
-      <Table columns={colonnes} dataSource={data} loading={chargement} rowKey="id" pagination={false} />
+      <Table columns={colonnes} dataSource={data} loading={chargement} rowKey="id" pagination={false} scroll={{ x: 'max-content' }}/>
 
-      <Modal title={editingRecord ? "Modifier l'événement" : "Nouvel événement"} open={isModalOpen} onCancel={closeModal} footer={null} width={600} destroyOnClose>
+      <Modal title={editingRecord ? "Modifier l'événement" : "Nouvel événement"} open={isModalOpen} onCancel={closeModal} footer={null} width={isMobile ? '95vw' : 600} destroyOnClose>
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <ImageUpload value={imageUrl} onChange={setImageUrl} />
 
           <Form.Item name="nom" label="Nom de l'événement" rules={[{ required: true }]}><Input placeholder="Ex: Soirée Jazz" /></Form.Item>
           <Form.Item name="description" label="Description"><TextArea rows={3} /></Form.Item>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
             <Form.Item name="prix_entree" label="Prix d'entrée (FCFA)"><InputNumber style={{ width: '100%' }} min={0} /></Form.Item>
             <Form.Item name="heure_debut" label="Date et Heure"><DatePicker showTime style={{ width: '100%' }} format="YYYY-MM-DD HH:mm" placeholder="Sélectionner date et heure" /></Form.Item>
           </div>
