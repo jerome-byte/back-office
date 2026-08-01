@@ -390,10 +390,26 @@ function CategoriesTab() {
     form.resetFields();
   };
 
+    const toggleActif = async (record) => {
+    const nouveauActif = !record.actif;
+    try {
+      await fetch(`${API_URL}/categories/${record.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actif: nouveauActif }),
+      });
+      message.success(nouveauActif ? 'Catégorie activée' : 'Catégorie désactivée');
+      fetchData();
+    } catch (err) { message.error("Erreur"); }
+  };
+
   const colonnes = [
     { title: 'Nom (FR)', dataIndex: 'nom_fr', key: 'nom_fr', render: (t) => <strong>{t}</strong> },
     { title: 'Type', dataIndex: 'type', key: 'type', render: (t) => <Tag color={t === 'boisson' ? 'blue' : 'orange'}>{t}</Tag> },
     { title: 'Ordre', dataIndex: 'ordre_affichage', key: 'ordre_affichage' },
+        { title: 'Actif', dataIndex: 'actif', key: 'actif', render: (actif, record) => (
+      <Switch checked={actif !== false} onChange={() => toggleActif(record)} checkedChildren="On" unCheckedChildren="Off" />
+    )},
     { title: 'Actions', key: 'actions', render: (_, record) => (
       <Space>
         <Button icon={<EditOutlined />} onClick={() => openModal(record)} />
@@ -419,6 +435,7 @@ function CategoriesTab() {
             <Select options={[{ value: 'plat', label: 'Plat' }, { value: 'boisson', label: 'Boisson' }]} />
           </Form.Item>
           <Form.Item name="ordre_affichage" label="Ordre d'affichage" initialValue={0}><InputNumber style={{ width: '100%' }} /></Form.Item>
+          <Form.Item name="actif" label="Active" valuePropName="checked" initialValue={true}><Switch checkedChildren="On" unCheckedChildren="Off" /></Form.Item>
           <Form.Item><Button type="primary" htmlType="submit" block style={{ background: '#ff7a00', borderColor: '#ff7a00' }}>Enregistrer</Button></Form.Item>
         </Form>
       </Modal>
@@ -509,6 +526,19 @@ function MenuTab() {
     setImageUrl('');
   };
 
+  const toggleActif = async (record) => {
+    const nouveauActif = !record.actif;
+    try {
+      await fetch(`${API_URL}/plats/${record.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actif: nouveauActif }),
+      });
+      message.success(nouveauActif ? 'Plat activé' : 'Plat désactivé');
+      fetchData();
+    } catch (err) { message.error("Erreur"); }
+  };
+
   const colonnes = [
     { title: 'Image', dataIndex: 'image_url', key: 'img', render: (url) => url ? <img src={url} style={{ width: 50, height: 50, borderRadius: 8, objectFit: 'cover' }} /> : <AppstoreOutlined /> },
     { title: 'Nom', dataIndex: 'nom_fr', key: 'nom_fr', render: (text) => <strong>{text}</strong> },
@@ -516,6 +546,9 @@ function MenuTab() {
     { title: 'Prix', dataIndex: 'prix', key: 'prix', render: (p) => `${p} FCFA` },
     { title: 'Spécialité', dataIndex: 'est_specialite', key: 'spec', render: (s) => s ? <Tag color="orange">Oui</Tag> : 'Non' },
     { title: 'Populaire', dataIndex: 'est_populaire', key: 'pop', render: (p) => p ? <Tag color="blue">Oui</Tag> : 'Non' },
+        { title: 'Actif', dataIndex: 'actif', key: 'actif', render: (actif, record) => (
+      <Switch checked={actif !== false} onChange={() => toggleActif(record)} checkedChildren="On" unCheckedChildren="Off" />
+    )},
     { title: 'Actions', key: 'actions', render: (_, record) => (
       <Space>
         <Button icon={<EditOutlined />} onClick={() => openModal(record)} />
@@ -551,10 +584,11 @@ function MenuTab() {
           </div>
           <Form.Item name="description_fr" label="Description"><TextArea rows={2} /></Form.Item>
           <Form.Item name="ingredients" label="Ingrédients"><TextArea rows={2} placeholder="Ex: Boeuf, Sel, Poivre..." /></Form.Item>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: '16px' }}>
             <Form.Item name="est_specialite" label="Spécialité" valuePropName="checked"><Switch /></Form.Item>
             <Form.Item name="est_populaire" label="Populaire" valuePropName="checked"><Switch /></Form.Item>
             <Form.Item name="en_promo" label="En promotion" valuePropName="checked"><Switch /></Form.Item>
+            <Form.Item name="actif" label="Actif" valuePropName="checked" initialValue={true}><Switch checkedChildren="On" unCheckedChildren="Off" /></Form.Item>
           </div>
           <Form.Item><Button type="primary" htmlType="submit" block style={{ background: '#ff7a00', borderColor: '#ff7a00' }}>Enregistrer</Button></Form.Item>
         </Form>
