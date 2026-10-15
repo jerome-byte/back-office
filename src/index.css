@@ -39,11 +39,9 @@ body {
 }
 
 .logo-marque { display: flex; align-items: center; gap: 10px; padding: 18px 20px; color: #fff; }
-.logo-marque .logo-icone {
-  width: 34px; height: 34px; border-radius: 10px; background: var(--braise);
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.logo-marque .logo-texte { font-weight: 800; letter-spacing: 0.08em; font-size: 15px; }
+.logo-marque .logo-icone { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; display: block; }
+.logo-marque .logo-texte { font-weight: 800; letter-spacing: -0.02em; font-size: 18px; line-height: 1.1; }
+.logo-marque .logo-texte span { color: #10B981; }
 .logo-marque .logo-sous { color: #9aa0ab; font-size: 11px; letter-spacing: 0.04em; }
 
 .ant-layout-sider .ant-menu-dark { background: transparent; }

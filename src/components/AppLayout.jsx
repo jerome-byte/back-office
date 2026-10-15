@@ -45,11 +45,9 @@ const SECTIONS = [
 function Logo() {
   return (
     <div className="logo-marque">
-      <div className="logo-icone">
-        <svg width="18" height="18" viewBox="0 0 64 64"><path d="M32 6c5 10 15 15 15 28a15 15 0 0 1-30 0c0-8 4-12 8-15 0 5 2 8 5 9-1-8 0-15 2-22z" fill="#fff" /></svg>
-      </div>
+      <img className="logo-icone" src="/favicon.svg" alt="" />
       <div>
-        <div className="logo-texte">CARNIVORE</div>
+        <div className="logo-texte">carnivore<span>.</span></div>
         <div className="logo-sous">Back-office</div>
       </div>
     </div>
@@ -99,7 +97,7 @@ export default function AppLayout() {
           duration: 8,
         });
         if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
-          new Notification(`Nouvelle commande ${p.new.numero ?? ''}`, { body: `${p.new.montant_total} FCFA`, icon: '/favicon.svg' });
+          new Notification(`Nouvelle commande ${p.new.numero ?? ''}`, { body: `${p.new.montant_total} FCFA`, icon: '/icon-192.png', badge: '/icon-192.png' });
         }
         chargerCompteurs();
       })

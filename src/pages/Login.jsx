@@ -37,8 +37,8 @@ export default function Login() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <img src="/favicon.svg" width={40} height={40} alt="" />
           <div>
-            <div style={{ fontWeight: 800, letterSpacing: '0.1em' }}>CARNIVORE</div>
-            <div style={{ color: '#9aa0ab', fontSize: 12 }}>Restaurant & Grillade</div>
+            <div style={{ fontWeight: 800, fontSize: 20, letterSpacing: '-0.02em', lineHeight: 1 }}>carnivore<span style={{ color: '#10B981' }}>.</span></div>
+            <div style={{ color: '#10B981', fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', marginTop: 4 }}>BY CAMBÉRÈNE</div>
           </div>
         </div>
         <div>

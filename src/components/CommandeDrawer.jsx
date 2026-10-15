@@ -53,7 +53,7 @@ export default function CommandeDrawer({ commandeId, onClose }) {
     if (!w) return;
     const lignes = cmd.commande_items.map((i) => `<tr><td>${i.quantite}×</td><td>${i.nom}${i.notes ? `<br><small>↳ ${i.notes}</small>` : ''}</td><td style="text-align:right">${i.total}</td></tr>`).join('');
     w.document.write(`<html><head><title>${cmd.numero}</title><style>body{font-family:monospace;font-size:13px;padding:10px;width:280px}h2{text-align:center;margin:4px 0}table{width:100%;border-collapse:collapse}td{padding:3px 0;vertical-align:top}.t{border-top:1px dashed #000;margin-top:6px;padding-top:6px}</style></head><body>
-      <h2>CARNIVORE</h2><div style="text-align:center">${cmd.numero} · ${dateHeure(cmd.created_at)}</div>
+      <h2>Le Carnivore By Cambérène</h2><div style="text-align:center">${cmd.numero} · ${dateHeure(cmd.created_at)}</div>
       <p>${cmd.type === 'livraison' ? 'LIVRAISON' : 'À EMPORTER'}<br>${cmd.client_nom ?? ''} ${cmd.client_phone}<br>${cmd.adresse_livraison ?? ''}</p>
       <table>${lignes}</table>
       <div class="t">Sous-total : ${cmd.sous_total}<br>Livraison : ${cmd.frais_livraison}<br>Réduction : -${Number(cmd.reduction) + Number(cmd.reduction_points)}<br><b>TOTAL : ${cmd.montant_total} FCFA</b><br>Paiement : ${MODES_PAIEMENT[cmd.mode_paiement]?.label} (${cmd.statut_paiement === 'paye' ? 'payé' : 'à encaisser'})</div>
