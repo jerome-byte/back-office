@@ -1,0 +1,76 @@
+:root {
+  --braise: #e4572e;
+  --braise-fonce: #c2401b;
+  --charbon: #16181d;
+  --charbon-2: #1f222a;
+  --fond: #f4f5f7;
+  --texte-doux: #6b7280;
+  --bordure: #eceef2;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--fond);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+}
+
+.page-entete {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.page-entete h1 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.02em; color: #111827; }
+.page-entete p { margin: 4px 0 0; color: var(--texte-doux); font-size: 13.5px; }
+
+.carte {
+  background: #fff; border: 1px solid var(--bordure); border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.kpi { padding: 18px 20px; height: 100%; }
+.kpi .kpi-label { color: var(--texte-doux); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.kpi .kpi-valeur { font-size: 26px; font-weight: 750; letter-spacing: -0.02em; margin-top: 6px; color: #111827; }
+.kpi .kpi-sous { font-size: 12.5px; color: var(--texte-doux); margin-top: 2px; }
+.kpi .kpi-icone {
+  width: 30px; height: 30px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center;
+  background: #fff1ec; color: var(--braise); font-size: 15px;
+}
+
+.logo-marque { display: flex; align-items: center; gap: 10px; padding: 18px 20px; color: #fff; }
+.logo-marque .logo-icone {
+  width: 34px; height: 34px; border-radius: 10px; background: var(--braise);
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.logo-marque .logo-texte { font-weight: 800; letter-spacing: 0.08em; font-size: 15px; }
+.logo-marque .logo-sous { color: #9aa0ab; font-size: 11px; letter-spacing: 0.04em; }
+
+.ant-layout-sider .ant-menu-dark { background: transparent; }
+.ant-layout-sider .ant-menu-item-group-title { color: #6b7280 !important; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Kanban cuisine */
+.kanban { display: grid; grid-template-columns: repeat(4, minmax(260px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 8px; }
+.kanban-col { background: #eceef2; border-radius: 14px; padding: 10px; min-height: 60vh; }
+.kanban-col-titre { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px 10px; font-weight: 650; }
+.ticket { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid var(--bordure); border-left: 4px solid var(--braise); }
+.ticket.retard { border-left-color: #dc2626; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12); }
+.ticket-lignes { margin: 8px 0; padding: 0; list-style: none; font-size: 14px; }
+.ticket-lignes li { display: flex; gap: 8px; padding: 2px 0; }
+.ticket-lignes .qte { font-weight: 800; min-width: 26px; color: var(--braise); }
+.ticket-note { font-size: 12px; color: #b45309; background: #fffbeb; border-radius: 6px; padding: 2px 6px; margin-left: 34px; }
+
+.mode-tv .ant-layout-sider, .mode-tv .ant-layout-header { display: none !important; }
+
+.leaflet-container { border-radius: 14px; font-family: inherit; }
+.pastille { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+@media (max-width: 900px) {
+  .kanban { grid-template-columns: repeat(4, 85vw); }
+  .page-entete h1 { font-size: 19px; }
+}
+@media print {
+  .ant-layout-sider, .ant-layout-header, .no-print { display: none !important; }
+}
+
+.ant-segmented { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
